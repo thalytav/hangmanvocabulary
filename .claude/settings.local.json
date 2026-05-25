@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx playwright *)",
+      "PowerShell(npx playwright --version 2>$null)",
+      "PowerShell(if \\(-not $?\\) { \"no playwright\" })",
+      "PowerShell(Start-Process \"C:\\\\Users\\\\User\\\\Downloads\\\\html-css-javascript-games-main\\\\html-css-javascript-games-main\\\\12-Hangman-Game\\\\index.html\")"
+    ]
+  }
+}

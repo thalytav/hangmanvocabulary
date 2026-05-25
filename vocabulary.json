@@ -1,0 +1,235 @@
+{
+  "vocabulary": [
+    {
+      "id": 1,
+      "category": "Rumah",
+      "indonesian": "Ruang Keluarga",
+      "english": "living room",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 2,
+      "category": "Rumah",
+      "indonesian": "Kamar Tidur",
+      "english": "bedroom",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 3,
+      "category": "Rumah",
+      "indonesian": "Dapur",
+      "english": "kitchen",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 4,
+      "category": "Rumah",
+      "indonesian": "Kamar Mandi",
+      "english": "bathroom",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 5,
+      "category": "Rumah",
+      "indonesian": "Ruang Makan",
+      "english": "dining room",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 6,
+      "category": "Rumah",
+      "indonesian": "Ruang Belajar",
+      "english": "study room",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 7,
+      "category": "Rumah",
+      "indonesian": "Garasi Mobil",
+      "english": "garage",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 8,
+      "category": "Sekolah",
+      "indonesian": "Kelas",
+      "english": "classroom",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 9,
+      "category": "Sekolah",
+      "indonesian": "Perpustakaan",
+      "english": "library",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 10,
+      "category": "Sekolah",
+      "indonesian": "Kantin Sekolah",
+      "english": "school cafeteria",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 11,
+      "category": "Sekolah",
+      "indonesian": "Lapangan Olahraga",
+      "english": "sports field",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 12,
+      "category": "Sekolah",
+      "indonesian": "Laboratorium",
+      "english": "laboratory",
+      "difficulty": "advanced"
+    },
+    {
+      "id": 13,
+      "category": "Makanan",
+      "indonesian": "Apel",
+      "english": "apple",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 14,
+      "category": "Makanan",
+      "indonesian": "Pisang",
+      "english": "banana",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 15,
+      "category": "Makanan",
+      "indonesian": "Steak Daging",
+      "english": "steak",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 16,
+      "category": "Makanan",
+      "indonesian": "Sup Ayam",
+      "english": "chicken soup",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 17,
+      "category": "Makanan",
+      "indonesian": "Kopi Panas",
+      "english": "hot coffee",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 18,
+      "category": "Makanan",
+      "indonesian": "Roti Tawar",
+      "english": "bread",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 19,
+      "category": "Binatang",
+      "indonesian": "Kucing",
+      "english": "cat",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 20,
+      "category": "Binatang",
+      "indonesian": "Anjing",
+      "english": "dog",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 21,
+      "category": "Binatang",
+      "indonesian": "Burung Beo",
+      "english": "parrot",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 22,
+      "category": "Binatang",
+      "indonesian": "Ikan Mas",
+      "english": "goldfish",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 23,
+      "category": "Binatang",
+      "indonesian": "Gajah",
+      "english": "elephant",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 24,
+      "category": "Pekerjaan",
+      "indonesian": "Dokter",
+      "english": "doctor",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 25,
+      "category": "Pekerjaan",
+      "indonesian": "Guru Sekolah",
+      "english": "teacher",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 26,
+      "category": "Pekerjaan",
+      "indonesian": "Insinyur",
+      "english": "engineer",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 27,
+      "category": "Pekerjaan",
+      "indonesian": "Desainer Grafis",
+      "english": "graphic designer",
+      "difficulty": "advanced"
+    },
+    {
+      "id": 28,
+      "category": "Pekerjaan",
+      "indonesian": "Programmer Komputer",
+      "english": "programmer",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": 29,
+      "category": "Warna",
+      "indonesian": "Merah",
+      "english": "red",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 30,
+      "category": "Warna",
+      "indonesian": "Biru",
+      "english": "blue",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 31,
+      "category": "Warna",
+      "indonesian": "Kuning",
+      "english": "yellow",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 32,
+      "category": "Warna",
+      "indonesian": "Hijau",
+      "english": "green",
+      "difficulty": "beginner"
+    },
+    {
+      "id": 33,
+      "category": "Warna",
+      "indonesian": "Ungu Tua",
+      "english": "purple",
+      "difficulty": "intermediate"
+    }
+  ]
+}
