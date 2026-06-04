@@ -1,4 +1,4 @@
-# P-13 : Implementasi Game Edukasi (HangMan Vocabulary)
+# Pertemuan-13 : Implementasi Game Edukasi (HangMan Vocabulary)
 
 ---
 
