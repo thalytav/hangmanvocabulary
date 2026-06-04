@@ -1,327 +1,378 @@
-// ========== VOCABULARY DATA (Embedded) ==========
-const vocabularyData = {
-  vocabulary: [
-    { id: 1, category: "Rumah", indonesian: "Ruang Keluarga", english: "living room", difficulty: "beginner" },
-    { id: 2, category: "Rumah", indonesian: "Kamar Tidur", english: "bedroom", difficulty: "beginner" },
-    { id: 3, category: "Rumah", indonesian: "Dapur", english: "kitchen", difficulty: "beginner" },
-    { id: 4, category: "Rumah", indonesian: "Kamar Mandi", english: "bathroom", difficulty: "beginner" },
-    { id: 5, category: "Rumah", indonesian: "Ruang Makan", english: "dining room", difficulty: "intermediate" },
-    { id: 6, category: "Rumah", indonesian: "Ruang Belajar", english: "study room", difficulty: "intermediate" },
-    { id: 7, category: "Rumah", indonesian: "Garasi Mobil", english: "garage", difficulty: "beginner" },
-    { id: 8, category: "Sekolah", indonesian: "Kelas", english: "classroom", difficulty: "beginner" },
-    { id: 9, category: "Sekolah", indonesian: "Perpustakaan", english: "library", difficulty: "beginner" },
-    { id: 10, category: "Sekolah", indonesian: "Kantin Sekolah", english: "school cafeteria", difficulty: "intermediate" },
-    { id: 11, category: "Sekolah", indonesian: "Lapangan Olahraga", english: "sports field", difficulty: "intermediate" },
-    { id: 12, category: "Sekolah", indonesian: "Laboratorium", english: "laboratory", difficulty: "advanced" },
-    { id: 13, category: "Makanan", indonesian: "Apel", english: "apple", difficulty: "beginner" },
-    { id: 14, category: "Makanan", indonesian: "Pisang", english: "banana", difficulty: "beginner" },
-    { id: 15, category: "Makanan", indonesian: "Steak Daging", english: "steak", difficulty: "beginner" },
-    { id: 16, category: "Makanan", indonesian: "Sup Ayam", english: "chicken soup", difficulty: "intermediate" },
-    { id: 17, category: "Makanan", indonesian: "Kopi Panas", english: "hot coffee", difficulty: "intermediate" },
-    { id: 18, category: "Makanan", indonesian: "Roti Tawar", english: "bread", difficulty: "beginner" },
-    { id: 19, category: "Binatang", indonesian: "Kucing", english: "cat", difficulty: "beginner" },
-    { id: 20, category: "Binatang", indonesian: "Anjing", english: "dog", difficulty: "beginner" },
-    { id: 21, category: "Binatang", indonesian: "Burung Beo", english: "parrot", difficulty: "intermediate" },
-    { id: 22, category: "Binatang", indonesian: "Ikan Mas", english: "goldfish", difficulty: "intermediate" },
-    { id: 23, category: "Binatang", indonesian: "Gajah", english: "elephant", difficulty: "beginner" },
-    { id: 24, category: "Pekerjaan", indonesian: "Dokter", english: "doctor", difficulty: "beginner" },
-    { id: 25, category: "Pekerjaan", indonesian: "Guru Sekolah", english: "teacher", difficulty: "beginner" },
-    { id: 26, category: "Pekerjaan", indonesian: "Insinyur", english: "engineer", difficulty: "intermediate" },
-    { id: 27, category: "Pekerjaan", indonesian: "Desainer Grafis", english: "graphic designer", difficulty: "advanced" },
-    { id: 28, category: "Pekerjaan", indonesian: "Programmer Komputer", english: "programmer", difficulty: "intermediate" },
-    { id: 29, category: "Warna", indonesian: "Merah", english: "red", difficulty: "beginner" },
-    { id: 30, category: "Warna", indonesian: "Biru", english: "blue", difficulty: "beginner" },
-    { id: 31, category: "Warna", indonesian: "Kuning", english: "yellow", difficulty: "beginner" },
-    { id: 32, category: "Warna", indonesian: "Hijau", english: "green", difficulty: "beginner" },
-    { id: 33, category: "Warna", indonesian: "Ungu Tua", english: "purple", difficulty: "intermediate" }
-  ]
-};
+/* ============================================================
+   Tebak Kata — Hangman Kosakata Indonesia/Inggris
+   jQuery. Data: assets/data/data.js  (KATEGORI, KOSAKATA)
+   ============================================================ */
 
-// ========== GAME STATE ==========
-let allVocabulary = [];
-let currentWord = {};
-let correctLetters = [];
-let wrongLetters = [];
-let playable = true;
-let hintUsed = false;
+$(function () {
+  "use strict";
 
-// ========== DOM ELEMENTS ==========
-const wordElement = document.getElementById("word");
-const hintText = document.getElementById("hint-text");
-const wrongLettersElement = document.getElementById("wrong-letters");
-const playAgainButton = document.getElementById("play-button");
-const hintButton = document.getElementById("hint-button");
-const skipButton = document.getElementById("skip-button");
-const notification = document.getElementById("notification-container");
-const notificationText = document.getElementById("notification-text");
-const figureParts = document.querySelectorAll(".figure-part");
-const messageBox = document.getElementById("message-box");
-const messageText = document.getElementById("message-text");
-const answerText = document.getElementById("answer-text");
-const keyboardContainer = document.getElementById("keyboard-container");
-const correctCountSpan = document.getElementById("correct-count");
-const wrongCountSpan = document.getElementById("wrong-count");
-const categoryNameSpan = document.getElementById("category-name");
-const difficultyBadge = document.getElementById("difficulty-badge");
+  // ---------- Konstanta ----------
+  const MAX_WRONG = 6;        // jumlah bagian figur = 6
+  const TIME_PER_WORD = 30;   // detik per kata
+  const SESSION_WORDS = 10;   // jumlah kata per sesi
 
-// ========== INITIALIZE VOCABULARY ==========
-function initializeVocabulary() {
-  allVocabulary = vocabularyData.vocabulary;
-  console.log(`Vocabulary loaded: ${allVocabulary.length} words`);
-  initGame();
-}
+  // ---------- State ----------
+  const state = {
+    catId: "all",        // "all" atau id kategori
+    pool: [],            // daftar kata untuk sesi
+    queue: [],           // antrian kata tersisa
+    current: null,       // { tampil, target, arahTebak, kategori }
+    correct: [],         // huruf benar (lowercase)
+    wrong: [],           // huruf salah (lowercase)
+    score: 0,
+    streak: 0,
+    answered: 0,
+    won: 0,
+    playable: false,
+    timer: null,
+    timeLeft: TIME_PER_WORD,
+  };
 
-// ========== INITIALIZE GAME ==========
-function initGame() {
-  playable = true;
-  correctLetters = [];
-  wrongLetters = [];
-  hintUsed = false;
+  // ---------- Cache elemen ----------
+  const $screenStart = $("#screen-start");
+  const $screenGame  = $("#screen-game");
+  const $catGrid     = $("#cat-grid");
+  const $word        = $("#word");
+  const $wrong       = $("#wrong-letters");
+  const $keyboard    = $("#keyboard");
+  const $figureParts = $(".figure-part");
+  const $lives       = $("#lives");
 
-  // Select random word
-  currentWord = allVocabulary[Math.floor(Math.random() * allVocabulary.length)];
-  const englishWord = currentWord.english.toLowerCase();
-
-  console.log(`Word: ${englishWord}, Hint: ${currentWord.indonesian}`);
-
-  // Create keyboard
-  createKeyboard(englishWord);
-
-  // Update UI
-  hintText.innerText = currentWord.indonesian;
-  categoryNameSpan.innerText = currentWord.category;
-  difficultyBadge.innerText = currentWord.difficulty.charAt(0).toUpperCase() + currentWord.difficulty.slice(1);
-
-  messageBox.style.display = "none";
-  displayWord();
-  updateWrongLettersElement();
-  hintButton.disabled = false;
-  skipButton.disabled = false;
-}
-
-// ========== CREATE DYNAMIC KEYBOARD ==========
-function createKeyboard(word) {
-  keyboardContainer.innerHTML = "";
-  const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-
-  letters.forEach((letter) => {
-    const button = document.createElement("button");
-    button.innerText = letter.toUpperCase();
-    button.classList.add("key-button");
-    button.addEventListener("click", () => guessLetter(letter, button));
-    keyboardContainer.appendChild(button);
-  });
-}
-
-// ========== GUESS LETTER ==========
-function guessLetter(letter, buttonElement) {
-  if (!playable) return;
-
-  const englishWord = currentWord.english.toLowerCase();
-
-  if (correctLetters.includes(letter) || wrongLetters.includes(letter)) {
-    showNotification("Huruf sudah digunakan sebelumnya!");
-    return;
-  }
-
-  // Disable button
-  buttonElement.disabled = true;
-
-  if (englishWord.includes(letter)) {
-    // Correct guess
-    correctLetters.push(letter);
-    buttonElement.style.background = "#1dd1a1";
-    displayWord();
-  } else {
-    // Wrong guess
-    wrongLetters.push(letter);
-    buttonElement.style.background = "#e94560";
-    updateWrongLettersElement();
-  }
-
-  checkGameStatus();
-}
-
-// ========== DISPLAY WORD ==========
-function displayWord() {
-  const englishWord = currentWord.english.toLowerCase();
-
-  wordElement.innerHTML = englishWord
-    .split("")
-    .map((char) => {
-      if (char === " ") {
-        // Space is always visible
-        return `<span class="letter" style="border: none; background: transparent;"> </span>`;
-      } else if (correctLetters.includes(char)) {
-        return `<span class="letter">${char}</span>`;
-      } else {
-        return `<span class="letter"></span>`;
-      }
-    })
-    .join("");
-
-  // Check win condition
-  const uniqueLetters = [...new Set(englishWord.split("").filter((char) => char !== " "))];
-  const visibleLetters = uniqueLetters.filter((char) => correctLetters.includes(char));
-
-  if (visibleLetters.length === uniqueLetters.length) {
-    wonGame();
-  }
-}
-
-// ========== UPDATE WRONG LETTERS DISPLAY ==========
-function updateWrongLettersElement() {
-  wrongLettersElement.innerHTML = wrongLetters.map((letter) => `<span>${letter}</span>`).join("");
-
-  // Update figure
-  figureParts.forEach((part, index) => {
-    part.style.display = index < wrongLetters.length ? "block" : "none";
-  });
-
-  wrongCountSpan.innerText = wrongLetters.length;
-
-  // Check lose condition
-  if (wrongLetters.length === figureParts.length) {
-    lostGame();
-  }
-}
-
-// ========== CHECK GAME STATUS ==========
-function checkGameStatus() {
-  if (playable) {
-    const englishWord = currentWord.english.toLowerCase();
-    const uniqueLetters = [...new Set(englishWord.split("").filter((char) => char !== " "))];
-    const visibleLetters = uniqueLetters.filter((char) => correctLetters.includes(char));
-
-    // Update correct count
-    correctCountSpan.innerText = correctLetters.length;
-
-    // Check win
-    if (visibleLetters.length === uniqueLetters.length) {
-      wonGame();
-    }
-
-    // Check lose
-    if (wrongLetters.length === figureParts.length) {
-      lostGame();
-    }
-  }
-}
-
-// ========== WON GAME ==========
-function wonGame() {
-  playable = false;
-  messageBox.style.display = "block";
-  messageText.innerText = "🎉 Selamat! Kamu Menang!";
-  answerText.innerText = `Jawaban: ${currentWord.english.toUpperCase()}`;
-  messageBox.style.background = "rgba(29, 209, 161, 0.3)";
-  messageBox.style.borderColor = "#1dd1a1";
-  messageText.style.color = "#1dd1a1";
-  disableAllButtons();
-}
-
-// ========== LOST GAME ==========
-function lostGame() {
-  playable = false;
-  messageBox.style.display = "block";
-  messageText.innerText = "😞 Game Over!";
-  answerText.innerText = `Jawaban: ${currentWord.english.toUpperCase()}`;
-  messageBox.style.background = "rgba(233, 69, 96, 0.3)";
-  messageBox.style.borderColor = "#e94560";
-  messageText.style.color = "#e94560";
-  disableAllButtons();
-}
-
-// ========== DISABLE ALL BUTTONS ==========
-function disableAllButtons() {
-  document.querySelectorAll(".key-button").forEach((btn) => {
-    btn.disabled = true;
-  });
-}
-
-// ========== SHOW NOTIFICATION ==========
-function showNotification(message) {
-  notificationText.innerText = message;
-  notification.classList.add("show");
-  setTimeout(() => {
-    notification.classList.remove("show");
-  }, 2000);
-}
-
-// ========== HINT BUTTON ==========
-hintButton.addEventListener("click", () => {
-  if (!playable) return;
-
-  if (hintUsed) {
-    showNotification("Kamu sudah menggunakan hint!");
-    return;
-  }
-
-  // Get unused letters
-  const englishWord = currentWord.english.toLowerCase();
-  const unusedLetters = englishWord
-    .split("")
-    .filter((char) => char !== " " && !correctLetters.includes(char) && !wrongLetters.includes(char));
-
-  if (unusedLetters.length === 0) {
-    showNotification("Tidak ada hint lagi!");
-    return;
-  }
-
-  // Auto-reveal a random unused letter
-  const randomLetter = unusedLetters[Math.floor(Math.random() * unusedLetters.length)];
-  correctLetters.push(randomLetter);
-  hintUsed = true;
-
-  // Disable the hint button after first use
-  hintButton.disabled = true;
-  hintButton.style.opacity = "0.5";
-
-  // Update keyboard button color
-  document.querySelectorAll(".key-button").forEach((btn) => {
-    if (btn.innerText.toLowerCase() === randomLetter) {
-      btn.disabled = true;
-      btn.style.background = "#f39c12";
-      btn.innerText += " (Hint)";
-    }
-  });
-
-  displayWord();
-  showNotification(`Hint: Huruf ${randomLetter.toUpperCase()} sudah dibuka!`);
-  checkGameStatus();
-});
-
-// ========== SKIP BUTTON ==========
-skipButton.addEventListener("click", () => {
-  if (!playable) return;
-  showNotification("Melanjutkan ke kata berikutnya...");
-  setTimeout(() => {
-    initGame();
-  }, 1000);
-});
-
-// ========== PLAY AGAIN BUTTON ==========
-playAgainButton.addEventListener("click", () => {
-  initGame();
-});
-
-// ========== KEYBOARD EVENT LISTENER ==========
-window.addEventListener("keypress", (e) => {
-  if (!playable) return;
-
-  const letter = e.key.toLowerCase();
-  if (letter >= "a" && letter <= "z") {
-    // Find and click the corresponding button
-    const buttons = document.querySelectorAll(".key-button");
-    buttons.forEach((btn) => {
-      if (btn.innerText.toLowerCase() === letter && !btn.disabled) {
-        btn.click();
-      }
+  // =========================================================
+  //  LAYAR MULAI — kategori
+  // =========================================================
+  function buildCategories() {
+    const buttons = [`<button class="cat-btn selected" data-id="all">🌟 Semua</button>`];
+    const ikon = { 1: "🏠", 2: "🍔", 3: "🏫", 4: "🏢", 5: "🚦" };
+    KATEGORI.forEach((c) => {
+      buttons.push(`<button class="cat-btn" data-id="${c.id}">${ikon[c.id] || "📚"} ${c.nama}</button>`);
     });
+    $catGrid.html(buttons.join(""));
   }
-});
 
-// ========== INITIALIZE ON PAGE LOAD ==========
-document.addEventListener("DOMContentLoaded", () => {
-  initializeVocabulary();
+  $catGrid.on("click", ".cat-btn", function () {
+    $(".cat-btn").removeClass("selected");
+    $(this).addClass("selected");
+    state.catId = $(this).data("id");
+  });
+
+  $("#btn-start").on("click", startSession);
+
+  // =========================================================
+  //  SESI
+  // =========================================================
+  function startSession() {
+    // Bangun pool sesuai kategori
+    let pool = (state.catId === "all")
+      ? KOSAKATA.slice()
+      : KOSAKATA.filter((k) => k.kategori_id === state.catId);
+
+    pool = shuffle(pool).slice(0, SESSION_WORDS);
+
+    state.pool = pool;
+    state.queue = pool.slice();
+    state.score = 0;
+    state.streak = 0;
+    state.answered = 0;
+    state.won = 0;
+
+    updateStats();
+    $screenStart.removeClass("active");
+    $screenGame.addClass("active");
+    nextWord();
+  }
+
+  function nextWord() {
+    closeOverlays();
+    if (state.queue.length === 0) { endSession(); return; }
+
+    const entry = state.queue.shift();
+
+    // Arah acak: tampil ID -> tebak ENG, atau tampil ENG -> tebak ID
+    const tebakInggris = Math.random() < 0.5;
+    const tampil = tebakInggris ? entry.indonesia : entry.inggris;
+    const target = tebakInggris ? entry.inggris   : entry.indonesia;
+
+    state.current = {
+      tampil,
+      target,
+      targetLower: target.toLowerCase(),
+      kategori: entry.kategori,
+      clueLang: tebakInggris ? "Bahasa Indonesia" : "Bahasa Inggris",
+      askLang:  tebakInggris ? "Tebak kata Inggris-nya" : "Tebak kata Indonesia-nya",
+    };
+    state.correct = [];
+    state.wrong = [];
+    state.playable = true;
+
+    // Render
+    $("#chip-cat").text(state.current.kategori);
+    $("#clue-lang").text(state.current.clueLang);
+    $("#clue-text").text(state.current.tampil);
+    $("#ask-lang").text(state.current.askLang);
+
+    resetFigure();
+    buildKeyboard();
+    renderWord();
+    renderWrong();
+    startTimer();
+  }
+
+  function endSession() {
+    stopTimer();
+    $("#end-summary").html(
+      `Kamu menjawab benar <b>${state.won}</b> dari <b>${state.answered}</b> kata.<br>` +
+      `Total skor: <b>${state.score}</b> ★`
+    );
+    $("#overlay-end").addClass("show");
+  }
+
+  $("#btn-restart").on("click", function () {
+    $("#overlay-end").removeClass("show");
+    $screenGame.removeClass("active");
+    $screenStart.addClass("active");
+  });
+
+  $("#btn-back").on("click", function () {
+    stopTimer();
+    state.playable = false;
+    closeOverlays();
+    $screenGame.removeClass("active");
+    $screenStart.addClass("active");
+  });
+
+  // =========================================================
+  //  RENDER KATA
+  // =========================================================
+  function renderWord(reveal) {
+    const target = state.current.target;
+    const html = target.split("").map((ch) => {
+      if (ch === " ") return `<span class="letter space"></span>`;
+      if (ch === "-") return `<span class="letter dash">-</span>`;
+      const lower = ch.toLowerCase();
+      const shown = state.correct.includes(lower);
+      if (shown) return `<span class="letter filled">${ch}</span>`;
+      if (reveal) return `<span class="letter reveal">${ch}</span>`;
+      return `<span class="letter"></span>`;
+    }).join("");
+    $word.html(html);
+  }
+
+  function renderWrong() {
+    $wrong.text(state.wrong.join(" "));
+  }
+
+  // huruf yang perlu ditebak (a-z saja), unik
+  function neededLetters() {
+    return [...new Set(
+      state.current.targetLower.split("").filter((c) => c >= "a" && c <= "z")
+    )];
+  }
+
+  function isWordComplete() {
+    return neededLetters().every((l) => state.correct.includes(l));
+  }
+
+  // =========================================================
+  //  KEYBOARD ON-SCREEN
+  // =========================================================
+  function buildKeyboard() {
+    $keyboard.html(
+      "qwertyuiopasdfghjklzxcvbnm".split("")
+        .map((ch) => `<button class="key" data-letter="${ch}">${ch}</button>`)
+        .join("")
+    );
+  }
+
+  $keyboard.on("click", ".key", function () {
+    const letter = $(this).data("letter");
+    handleGuess(String(letter));
+  });
+
+  // Keyboard fisik tetap berfungsi
+  $(document).on("keydown", function (e) {
+    if (!state.playable) return;
+    const k = (e.key || "").toLowerCase();
+    if (k.length === 1 && k >= "a" && k <= "z") handleGuess(k);
+  });
+
+  // =========================================================
+  //  LOGIKA TEBAKAN
+  // =========================================================
+  function handleGuess(letter) {
+    if (!state.playable) return;
+
+    // sudah dipakai?
+    if (state.correct.includes(letter) || state.wrong.includes(letter)) {
+      showToast("Huruf itu sudah kamu pilih");
+      return;
+    }
+
+    const $key = $keyboard.find(`.key[data-letter="${letter}"]`);
+
+    if (state.current.targetLower.includes(letter)) {
+      state.correct.push(letter);
+      $key.addClass("correct").prop("disabled", true);
+      renderWord();
+      if (isWordComplete()) winWord();
+    } else {
+      state.wrong.push(letter);
+      $key.addClass("wrong").prop("disabled", true);
+      renderWrong();
+      showFigurePart(state.wrong.length);
+      $(".figure-box").addClass("shake");
+      setTimeout(() => $(".figure-box").removeClass("shake"), 400);
+      if (state.wrong.length >= MAX_WRONG) loseWord();
+    }
+  }
+
+  // =========================================================
+  //  MENANG / KALAH / LEWAT
+  // =========================================================
+  function winWord() {
+    state.playable = false;
+    stopTimer();
+    state.answered++;
+    state.won++;
+    state.streak++;
+
+    // Skor: dasar 100 - (10 per salah) + bonus waktu + bonus streak
+    const base = 100 - state.wrong.length * 10;
+    const timeBonus = state.timeLeft * 2;
+    const streakBonus = (state.streak - 1) * 20;
+    const gain = Math.max(20, base + timeBonus + streakBonus);
+    state.score += gain;
+    updateStats();
+
+    showResult("🎉", "Benar!",
+      `<b>${state.current.target}</b> = ${otherSide()}`,
+      `+${gain} ★${state.streak > 1 ? "  🔥×" + state.streak : ""}`);
+  }
+
+  function loseWord() {
+    state.playable = false;
+    stopTimer();
+    state.answered++;
+    state.streak = 0;
+    updateStats();
+    renderWord(true); // ungkap kata
+    showResult("😕", "Belum tepat",
+      `Jawabannya: <b>${state.current.target}</b> = ${otherSide()}`,
+      "");
+  }
+
+  $("#btn-skip").on("click", function () {
+    if (!state.playable) return;
+    state.playable = false;
+    stopTimer();
+    state.answered++;
+    state.streak = 0;
+    updateStats();
+    renderWord(true);
+    showResult("⏭", "Dilewati",
+      `Jawabannya: <b>${state.current.target}</b> = ${otherSide()}`,
+      "");
+  });
+
+  // sisi terjemahan lawan (untuk ditampilkan saat hasil)
+  function otherSide() {
+    // current.tampil adalah petunjuk; target adalah jawaban => lawan dari target adalah tampil
+    return state.current.tampil;
+  }
+
+  $("#btn-next").on("click", nextWord);
+
+  function showResult(emoji, title, wordHtml, gainText) {
+    $("#result-emoji").text(emoji);
+    $("#result-title").text(title);
+    $("#result-word").html(wordHtml);
+    $("#result-gain").text(gainText);
+    $("#overlay").addClass("show");
+  }
+
+  function closeOverlays() {
+    $("#overlay").removeClass("show");
+    $("#overlay-end").removeClass("show");
+  }
+
+  // =========================================================
+  //  FIGUR HANGMAN
+  // =========================================================
+  function resetFigure() {
+    $figureParts.removeClass("show");
+    renderLives();
+  }
+  function showFigurePart(n) {
+    $figureParts.eq(n - 1).addClass("show");
+    renderLives();
+  }
+  function renderLives() {
+    const left = MAX_WRONG - state.wrong.length;
+    let s = "";
+    for (let i = 0; i < MAX_WRONG; i++) s += i < left ? "❤️" : "🤍";
+    $lives.html(s);
+  }
+
+  // =========================================================
+  //  TIMER
+  // =========================================================
+  function startTimer() {
+    stopTimer();
+    state.timeLeft = TIME_PER_WORD;
+    updateTimer();
+    state.timer = setInterval(function () {
+      state.timeLeft--;
+      updateTimer();
+      if (state.timeLeft <= 0) {
+        stopTimer();
+        if (state.playable) timeUp();
+      }
+    }, 1000);
+  }
+  function stopTimer() {
+    if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  }
+  function updateTimer() {
+    $("#stat-timer").text(state.timeLeft);
+    $("#chip-timer").toggleClass("warn", state.timeLeft <= 5);
+  }
+  function timeUp() {
+    state.playable = false;
+    state.answered++;
+    state.streak = 0;
+    updateStats();
+    renderWord(true);
+    showResult("⏰", "Waktu habis",
+      `Jawabannya: <b>${state.current.target}</b> = ${otherSide()}`,
+      "");
+  }
+
+  // =========================================================
+  //  STATS & UTIL
+  // =========================================================
+  function updateStats() {
+    $("#stat-score").text(state.score);
+    $("#stat-streak").text(state.streak);
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    $("#toast-note").text(msg).addClass("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => $("#toast-note").removeClass("show"), 1600);
+  }
+
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // =========================================================
+  //  INIT
+  // =========================================================
+  buildCategories();
 });
