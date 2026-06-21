@@ -1,146 +1,120 @@
-# Pertemuan-13 : Implementasi Game Edukasi (HangMan Vocabulary)
+# Tebak Kata — Hangman Kosakata Indonesia & Inggris
+
+Game edukasi berbasis **Hangman** untuk belajar kosakata Bahasa Indonesia ↔ Bahasa Inggris. Dikerjakan sebagai Tugas Mata Kuliah **Game Edukasi dan Simulasi**, Teknik Informatika ITS 2026.
 
 ---
 
-# Nama Anggota Kelompok:
+## Tim Pengembang
 
 | NRP | Nama | Kelas |
 | :--- | :--- | :--- |
 | 5025231055 | Thalyta Vius Pramesti | Game Edukasi dan Simulasi (T) |
 | 5025231064 | Alvin Zanua Putra | Game Edukasi dan Simulasi (T) |
 
-# Deskripsi
+---
 
-Implementasi game edukasi hangman vocabulary dengan menggunakan HTML, CSS, dan JavaScript dengan prompt:
+## Tentang Game
 
-> Saya ingin membuat game edukasi yang mengajarkan kosakata indonesia-inggris dengan data di file `kosakata_inggris.xlsx` beserta kategorinya. Berikan beberapa opsi sebelum implementasi.
->
-> Ketentuan aplikasi:
-> - offline
-> - jquery, css, bootstrap, html
-> - rasio layar 16:9
+**Tebak Kata** adalah game Hangman kosakata bilingual. Pemain diberi sebuah kata sebagai petunjuk (misalnya kata Indonesia *"Dapur"*), lalu harus menebak ejaan terjemahannya huruf demi huruf (misalnya *"Kitchen"*).
 
-Game mengajarkan **150 kosakata** dalam **5 kategori** (Rumah, Makanan, Sekolah, Kantor, Jalan — masing-masing 30 kata) yang bersumber dari `kosakata_inggris.xlsx`. Pemain menebak ejaan sebuah kata berdasarkan arti/terjemahannya, huruf demi huruf, dengan gaya permainan Hangman.
+Tujuan utamanya adalah **belajar kosakata baru sambil bermain**. Setiap tebakan salah akan memunculkan satu bagian tubuh "si orang gantung". Gagal lebih dari 6 kali, atau kehabisan waktu 30 detik, berarti kalah untuk kata tersebut.
 
-## Hasil Modifikasi
+Game berjalan **100% offline** langsung dari browser — tidak butuh internet maupun instalasi apapun.
 
-### Original HangMan
+---
 
-**a. Deskripsi**
+## Cara Bermain
 
-Saat halaman dibuka, `selectedWord` dipilih acak dari array `words` lewat `Math.floor(Math.random() * words.length)`. Kata ini disembunyikan, ditampilkan sebagai deretan garis bawah kosong — satu kotak `.letter` untuk tiap huruf, dibuat oleh fungsi `displayWord()`.
+1. **Pilih arah terjemahan** — Indonesia ke Inggris, atau sebaliknya.
+2. **Pilih kategori** — Semua, Rumah, Makanan, Sekolah, Kantor, atau Jalan.
+3. Tekan **Mulai Bermain** untuk memulai sesi (10 kata per sesi).
+4. Baca petunjuk kata yang tampil di tengah layar.
+5. **Tebak huruf** dengan klik tombol keyboard di layar, atau ketik dari keyboard fisik.
+   - Huruf **benar** → muncul di kotak kata, tombol berubah hijau.
+   - Huruf **salah** → masuk daftar "Salah", tombol berubah merah, satu bagian hangman muncul.
+6. Tebak semua huruf sebelum **6 kesalahan** atau **30 detik** habis.
+7. Gunakan tombol **Lewati Kata** jika ingin melewati kata yang sulit.
+8. Di akhir sesi, akan tampil ringkasan jumlah benar dan total skor.
 
-Pemain menekan huruf. Event `keypress` menangkap tombolnya, mengubah ke huruf kecil, dan memeriksa apakah itu huruf a–z. Lalu ada percabangan:
+---
 
-- Kalau huruf ada di dalam kata dan belum pernah ditebak, huruf dimasukkan ke array `correctLetters`, lalu `displayWord()` mengisi huruf itu di semua posisi yang cocok.
-- Kalau huruf tidak ada di kata dan belum pernah ditebak, masuk ke array `wrongLetters`, lalu `updateWrongLettersElement()` menampilkannya di daftar "Wrong" dan memunculkan satu bagian tubuh baru.
-- Kalau huruf sudah pernah ditebak (benar maupun salah), muncul notifikasi "You have already entered this letter" yang tampil 2 detik.
+## Fitur Utama
 
-**Cara menang/kalah.** Gambar orang punya 6 bagian (`figure-part`: kepala, badan, dua lengan, dua kaki). Fungsi `updateWrongLettersElement()` menampilkan bagian sebanyak jumlah huruf salah. Begitu `wrongLetters.length` mencapai 6, pemain kalah — popup muncul menampilkan kata yang sebenarnya. Sebaliknya, di `displayWord()`, setiap kali huruf benar ditambahkan, kode membandingkan teks yang tampil dengan `selectedWord`; kalau sudah sama persis, pemain menang dan popup "Congratulations" muncul.
+| Fitur | Penjelasan |
+| :--- | :--- |
+| **5 Kategori** | Rumah, Makanan, Sekolah, Kantor, dan Jalan. |
+| **Tebakan dua arah** | Indonesia ke Inggris atau sebaliknya, bisa dipilih di menu. |
+| **Timer 30 detik** | Setiap kata punya batas waktu; sisa waktu memberi bonus skor. |
+| **6 Nyawa** | Ditampilkan sebagai hati (❤️/🤍) sekaligus gambar hangman di layar. |
+| **Keyboard ganda** | Bisa klik tombol on-screen atau ketik langsung dari keyboard fisik. |
+| **Sistem skor** | Dihitung berdasarkan kecepatan, ketepatan, dan kombo beruntun (streak). |
+| **Streak / kombo** | Jawaban benar beruntun memberi bonus skor tambahan. |
+| **Efek suara** | Suara sintetis untuk setiap aksi: benar, salah, menang, kalah, timer, dll. |
+| **Animasi & efek** | Confetti saat menang, partikel huruf, flash layar, dan berbagai animasi lain. |
+| **Responsif** | Tampilan menyesuaikan layar desktop (16:9) maupun ponsel (portrait). |
 
-**Main lagi.** Tombol "Play Again" mengosongkan `correctLetters` dan `wrongLetters`, memilih kata acak baru, menggambar ulang tampilan, dan menyembunyikan popup.
+---
 
-Itu inti mekaniknya: satu kata tersembunyi, tebak per huruf, 6 kesalahan = kalah, kata lengkap = menang.
+## Sistem Skor
 
-**b. Preview Hasil Game:**
+Skor dihitung setiap kali berhasil menebak kata:
 
-screen awal
-![alt text](/assets/docs/original/image.jpg)
-screen tebak kata
-![alt text](/assets/docs/original/image2.jpg)
-screen kalah
-![alt text](/assets/docs/original/image4.jpg)
-screen menang
-![alt text](/assets/docs/original/image3.jpg)
+```
+Skor = Dasar + Bonus Waktu + Bonus Streak
+```
 
-### Modified HangMan
+| Komponen | Rumus |
+| :--- | :--- |
+| **Dasar** | `100 − (jumlah salah × 10)` |
+| **Bonus Waktu** | `sisa detik × 2` |
+| **Bonus Streak** | `(streak − 1) × 20` |
+| **Minimum** | 20 poin (jika hasil hitung di bawah 20) |
 
-**a. Deskripsi:**
+Jika salah 6 kali, waktu habis, atau memilih lewati — streak kembali ke 0 dan tidak ada skor untuk kata tersebut.
 
-Versi modifikasi mengubah Hangman dari sekadar tebak ejaan menjadi **game edukasi kosakata Indonesia–Inggris**, dengan sumber kata dari `kosakata_inggris.xlsx`. Seluruh kode tampilan ditulis ulang memakai **jQuery + Bootstrap**, dengan panggung permainan dikunci pada **rasio 16:9**, dan aplikasi berjalan sepenuhnya **offline**.
+---
 
-**Sumber data offline.** Karena game dijalankan langsung dari `file://`, membaca `.xlsx` lewat browser akan diblokir (CORS). Maka isi Excel dikonversi menjadi `assets/data/data.js` berisi dua array JavaScript, `KATEGORI` dan `KOSAKATA`, yang dimuat lewat tag `<script>`. Library jQuery dan Bootstrap juga disimpan lokal di `assets/vendor/`, sehingga tidak butuh koneksi internet sama sekali.
+## Struktur Data Kosakata
 
-**Layar mulai & pemilihan kategori.** Saat dibuka, `buildCategories()` menampilkan tombol setiap kategori (Rumah, Makanan, Sekolah, Kantor, Jalan) ditambah opsi "Semua". Pemain memilih kategori lalu menekan **Mulai Bermain**, yang memanggil `startSession()`.
+Data kosakata disimpan di `assets/data/data.js` dalam dua variabel global:
 
-**Sesi permainan.** Satu sesi terdiri dari **10 kata** (`SESSION_WORDS`). `startSession()` membangun `pool` kata sesuai kategori, mengacaknya dengan fungsi `shuffle()` (algoritma Fisher–Yates), dan menyiapkan antrian. Setiap kata diambil lewat `nextWord()`.
+```js
+// Daftar kategori
+const KATEGORI = [
+  { "id": 1, "nama": "Rumah" },
+  { "id": 2, "nama": "Makanan" },
+  // ...
+];
 
-**Arah tebakan acak dua arah.** Pada tiap kata, `nextWord()` mengacak arah: kadang menampilkan **kata Indonesia** sebagai petunjuk dan pemain menebak ejaan **kata Inggris**, kadang sebaliknya. Petunjuk ditampilkan di sebuah kartu (`clue-card`) lengkap dengan label bahasa, dan instruksi "Tebak kata ... -nya".
+// Daftar kosakata
+const KOSAKATA = [
+  { "kategori_id": 1, "kategori": "Rumah", "inggris": "Kitchen", "indonesia": "Dapur" },
+  // ...
+];
+```
 
-**Penanganan spasi & tanda hubung.** Fungsi `renderWord()` menggambar slot huruf. Karakter spasi (mis. "Living room") dan tanda hubung (mis. "Langit-langit") **ditampilkan otomatis** dan tidak perlu ditebak; `neededLetters()` hanya menghitung huruf a–z sebagai huruf yang harus ditebak, dan `isWordComplete()` memeriksa apakah seluruhnya sudah tertebak.
+Untuk menambah kata baru, cukup tambahkan entri baru ke array `KOSAKATA` dengan `kategori_id` yang sesuai.
 
-**Input ganda: keyboard layar + keyboard fisik.** `buildKeyboard()` membuat tombol A–Z di layar yang bisa diklik. Selain itu event `keydown` membuat keyboard fisik tetap berfungsi. Keduanya memanggil `handleGuess()`. Tombol yang sudah dipakai dinonaktifkan dan diberi warna hijau (benar) atau merah (salah). Huruf yang diulang memunculkan toast "Huruf itu sudah kamu pilih".
-
-**Skor, streak, dan timer.** Fitur tambahan dibanding versi asli:
-
-- **Skor** (`winWord()`): dasar `100 - (10 × jumlah salah)`, ditambah bonus waktu (`timeLeft × 2`) dan bonus streak (`(streak − 1) × 20`), minimal 20 poin.
-- **Streak** (🔥): bertambah tiap jawaban benar beruntun, dan kembali ke 0 jika salah, lewat, atau waktu habis.
-- **Timer** (`startTimer()`): 30 detik per kata (`TIME_PER_WORD`); chip timer berkedip merah saat ≤ 5 detik, dan kata otomatis gagal jika waktu habis (`timeUp()`).
-- **Tombol Lewati**: melewati kata tanpa penalti skor, namun memutus streak.
-
-**Cara menang/kalah per kata.** Sama seperti aslinya, ada 6 bagian figur (`MAX_WRONG`). Setiap salah menampilkan satu bagian via `showFigurePart()` dan mengurangi indikator nyawa (❤️/🤍) di `renderLives()`, disertai animasi getar (`shake`). Enam kesalahan = kata gagal (`loseWord()`), kata lengkap = menang (`winWord()`). Setiap hasil memunculkan popup dengan emoji, judul, jawaban beserta terjemahannya, dan perolehan skor.
-
-**Akhir sesi.** Setelah 10 kata, `endSession()` menampilkan ringkasan: jumlah kata benar dari total dan total skor. Tombol **Main Lagi** mengembalikan pemain ke layar mulai untuk memilih kategori kembali.
-
-**b. Hasil Game:**
-
-screen awal
-![alt text](/assets/docs/modified/image.jpg)
-screen tebak kata
-![alt text](/assets/docs/modified/image2.jpg)
-screen kalah
-![alt text](/assets/docs/modified/image3.jpg)
-screen menang
-![alt text](/assets/docs/modified/image4.jpg)
-![alt text](/assets/docs/modified/image4.jpg)
+---
 
 ## Cara Menjalankan
 
-1. Buka `index.html` di browser (klik dua kali — tidak perlu server lokal).
-2. Pilih kategori (atau **Semua**), lalu tekan **Mulai Bermain**.
-3. Tebak ejaan kata dari petunjuk arti yang muncul, lewat keyboard layar atau keyboard fisik.
-4. Salah 6 kali = kata gagal. Tersedia tombol **Lewati** dan **timer 30 detik** per kata.
-5. Satu sesi berisi 10 kata, lalu muncul ringkasan skor.
-
-## Struktur File
-
-```
-hangmanvocabulary/
-├── index.html
-├── style.css
-├── script.js                       (jQuery)
-├── README.md
-└── assets/
-    ├── data/
-    │   ├── kosakata_inggris.xlsx    (sumber data asli)
-    │   └── data.js                  (hasil konversi → dipakai game)
-    ├── docs/                        (gambar dokumentasi)
-    └── vendor/
-        ├── jquery.min.js
-        ├── bootstrap.min.css
-        └── bootstrap.bundle.min.js
-```
-
-## Convert XLSX ke JS menggunakan Python
-
-Jika `kosakata_inggris.xlsx` berubah, regenerasi `data.js`:
+Game ini murni HTML/CSS/JavaScript — cukup buka `index.html` langsung di browser.
 
 ```bash
-python3 - <<'PY'
-import openpyxl, json
-wb = openpyxl.load_workbook('assets/data/kosakata_inggris.xlsx')
-cat = {r[0]:r[1] for r in list(wb['Kategori'].iter_rows(values_only=True))[1:]}
-rows = list(wb['Kosakata'].iter_rows(values_only=True))[1:]
-data = [{'kategori_id':r[0],'kategori':cat[r[0]],'inggris':r[1],'indonesia':r[2]} for r in rows]
-cats = [{'id':k,'nama':v} for k,v in cat.items()]
-js  = '// Data kosakata (offline)\n'
-js += 'const KATEGORI = ' + json.dumps(cats, ensure_ascii=False, indent=2) + ';\n\n'
-js += 'const KOSAKATA = ' + json.dumps(data, ensure_ascii=False, indent=2) + ';\n'
-open('assets/data/data.js','w',encoding='utf-8').write(js)
-print('OK', len(data), 'kata')
-PY
+# Atau jalankan server lokal agar data termuat sempurna:
+python3 -m http.server 8000
+# Lalu buka: http://localhost:8000
 ```
 
-## Tentang
+Semua pustaka (jQuery & Bootstrap) sudah tersimpan lokal di `assets/vendor/` — tidak perlu koneksi internet.
 
-Institut Teknologi Sepuluh Nopember - Teknik Informatika - Game Edukasi dan Simulasi
+---
+
+## Teknologi
+
+- **HTML5** — struktur halaman dan layout layar.
+- **CSS3** — tema, animasi, confetti, partikel, dan efek visual.
+- **JavaScript + jQuery** — logika permainan, skor, timer, dan efek suara.
+- **Web Audio API** — efek suara sintetis tanpa file audio eksternal.
+- **Bootstrap** (offline) — penunjang gaya dasar.

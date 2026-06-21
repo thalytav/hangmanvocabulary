@@ -3,31 +3,105 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tebak Kata — Hangman Kosakata Inggris</title>
+    <title>Tebak Kata - Hangman Kosakata</title>
 
     <!-- Vendor lokal (offline) -->
     <link rel="stylesheet" href="assets/vendor/bootstrap.min.css" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="assets/css/style.css" />
   </head>
   <body>
     <!-- Panggung rasio 16:9 -->
     <div class="stage-wrap">
       <div class="stage" id="stage">
+        <!-- Floating background particles -->
+        <div id="particles-bg"></div>
+        <!-- Confetti container -->
+        <div id="confetti-container"></div>
+        <!-- Mute button -->
+        <button class="btn-mute" id="btn-mute" title="Toggle suara">🔊</button>
+
 
         <!-- ================= LAYAR MULAI ================= -->
         <section class="screen screen-start active" id="screen-start">
           <div class="start-inner">
             <div class="brand">
-              <span class="brand-badge">EDU</span>
+              <span class="brand-badge">EDUCATION</span>
               <h1 class="brand-title">Tebak&nbsp;Kata</h1>
               <p class="brand-sub">Hangman Kosakata Indonesia – Inggris</p>
             </div>
 
-            <p class="pick-label">Pilih kategori</p>
-            <div class="cat-grid" id="cat-grid"><!-- diisi JS --></div>
+            <div class="setup-row">
+              <div class="setup-col">
+                <p class="pick-label">Arah terjemahan</p>
+                <div class="dir-grid" id="dir-grid">
+                  <button class="dir-btn selected" data-dir="id-en">
+                    <span class="dir-flag">🇮🇩 - 🇬🇧</span>
+                    <span class="dir-text">
+                      <span class="dir-name">Indonesia - Inggris</span>
+                      <span class="dir-desc">Lihat kata Indonesia, tebak Inggris</span>
+                    </span>
+                  </button>
+                  <button class="dir-btn" data-dir="en-id">
+                    <span class="dir-flag">🇬🇧 - 🇮🇩</span>
+                    <span class="dir-text">
+                      <span class="dir-name">Inggris - Indonesia</span>
+                      <span class="dir-desc">Lihat kata Inggris, tebak Indonesia</span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="setup-col">
+                <p class="pick-label">Kategori</p>
+                <div class="cat-grid" id="cat-grid"><!-- diisi JS --></div>
+              </div>
+            </div>
 
             <button class="btn-play" id="btn-start">Mulai Bermain</button>
-            <p class="hint-foot">Tebak ejaan kata dari artinya. Salah 6 kali = kalah.</p>
+            <p class="hint-foot">Tebak ejaan kata dari artinya jika Salah 6 kali akan kalah.</p>
+
+            <div class="credits-section">
+              <div class="credits-divider"><span>Tim Pengembang</span></div>
+              <div class="credits-authors">
+
+                <div class="author-profile">
+                  <div class="author-ava" data-preview="assets/images/alvin.png" data-name="Alvin ZP" title="Klik untuk preview foto">
+                    <img src="assets/images/alvin.png" alt="Alvin" onerror="this.style.display='none'">
+                    <div class="ava-overlay"><span class="ava-overlay-text">Lihat Foto</span></div>
+                  </div>
+                  <div class="author-meta">
+                    <span class="author-name">ALVIN ZP</span>
+                    <a class="author-mail" href="mailto:zanuaputraalvin123@gmail.com">zanuaputraalvin123@gmail.com</a>
+                  </div>
+                </div>
+
+                <div class="author-profile">
+                  <div class="author-ava" data-preview="assets/images/vius.png" data-name="Thalyta VP" title="Klik untuk preview foto">
+                    <img src="assets/images/vius.png" alt="Thalyta" onerror="this.style.display='none'">
+                    <div class="ava-overlay"><span class="ava-overlay-text">Lihat Foto</span></div>
+                  </div>
+                  <div class="author-meta">
+                    <span class="author-name">THALYTA VP</span>
+                    <a class="author-mail" href="mailto:thalytapramesti@gmail.com">thalytapramesti@gmail.com</a>
+                  </div>
+                </div>
+
+              </div>
+              <div class="credits-course">
+                <b>Tugas Game Edukasi dan Simulasi</b> · Teknik Informatika ITS 2026
+              </div>
+            </div>
+
+            <!-- Photo Preview Modal -->
+            <div class="photo-modal" id="photo-modal">
+              <div class="photo-modal-backdrop" id="photo-modal-backdrop"></div>
+              <div class="photo-modal-card">
+                <img class="photo-modal-img" id="photo-modal-img" src="" alt="">
+                <div class="photo-modal-name" id="photo-modal-name"></div>
+                <button class="photo-modal-close" id="photo-modal-close">Tutup</button>
+              </div>
+            </div>
+
           </div>
         </section>
 
@@ -116,6 +190,7 @@
     <script src="assets/vendor/jquery.min.js"></script>
     <script src="assets/vendor/bootstrap.bundle.min.js"></script>
     <script src="assets/data/data.js"></script>
-    <script src="script.js"></script>
+    <script src="assets/js/sfx.js"></script>
+    <script src="assets/js/script.js"></script>
   </body>
 </html>
